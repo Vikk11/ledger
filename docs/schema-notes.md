@@ -1,0 +1,4 @@
+
+# Ledger Schema Notes
+
+The database uses a double-entry ledger design to record financial transactions. Each customer can own multiple accounts, and each account can have multiple ledger entries. A transfer records the movement of money between two accounts and must produce exactly two ledger entries: one negative entry for the sending account and one positive entry for the receiving account. The sum of the two entries must always equal zero, ensuring that money is neither created nor destroyed by a transfer. Account balances are calculated by summing the ledger entries for each account instead of overwriting a balance column whenever a transaction occurs. This approach preserves the transaction history and makes it possible to audit how an account reached its current balance. If a transaction needs to be corrected, a reversing entry should be recorded rather than silently changing the original financial history.
