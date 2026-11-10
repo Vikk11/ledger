@@ -13,6 +13,3 @@ target/
 # OS
 .DS_Store
 Thumbs.db
-
-# sql exercises
-/sql/
