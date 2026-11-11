@@ -45,13 +45,7 @@ Open:
 
 `http://localhost:8080/actuator/health`
 
-Expected response:
-
-```json
-{
-  "status": "UP"
-}
-```
+The health endpoint returns JSON containing "status": "UP". The response may also include additional component information, such as liveness and readiness groups.
 
 ### Run tests
 
@@ -67,25 +61,70 @@ On macOS/Linux:
 ./mvnw test
 ```
 
-## PostgreSQL Database
 
-The SQL exercises use PostgreSQL 16 through Docker Compose.
+## PostgreSQL Database Setup
 
-Start the database:
+The database schema is stored in the `db/` directory and uses PostgreSQL 16 through Docker Compose.
+
+The Docker Compose configuration uses the `POSTGRES_DB` environment variable to initialize the database. The default database name is `ledger_v2`.
+
+### 1. Configure environment variables
+
+Copy the example environment file:
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+macOS/Linux:
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with your local database credentials if necessary.
+
+### 2. Start PostgreSQL
 
 ```bash
 docker compose up -d
 ```
 
-Connect to the Lab 2 database:
+### 3. Load the database schema
+
+For a fresh database, apply the migrations in order.
+
+Windows PowerShell:
+
+```powershell
+Get-Content db\V1__ledger_schema.sql | docker compose exec -T db psql -U ledger_user -d ledger_v2
+
+Get-Content db\V2__improve_ledger_integrity.sql | docker compose exec -T db psql -U ledger_user -d ledger_v2
+```
+
+macOS/Linux:
+
+```bash
+docker compose exec -T db psql -U ledger_user -d ledger_v2 < db/V1__ledger_schema.sql
+
+docker compose exec -T db psql -U ledger_user -d ledger_v2 < db/V2__improve_ledger_integrity.sql
+```
+
+These migration files should be applied once, in order, to a fresh database.
+
+### 4. Connect to PostgreSQL
 
 ```bash
 docker compose exec db psql -U ledger_user -d ledger_v2
 ```
 
-Database credentials are stored locally in `.env` and should never be committed to GitHub.
+Database credentials are stored locally in `.env`. Never commit real credentials to GitHub.
 
-See `.env.example` for the required environment variable names.
+## Application Scope
+
+The Spring Boot application currently runs independently of the PostgreSQL database. The database schema and the Spring Boot application are separate parts of this educational project; database connectivity has not yet been implemented.
 
 ## Design Notes
 
