@@ -13,17 +13,16 @@ class MoneyTest {
     void doubleShowsFloatingPointPrecisionProblem() {
         double result = 0.1 + 0.2;
 
-        System.out.println("double result: " + result);
+        BigDecimal actual = BigDecimal.valueOf(result);
+        BigDecimal expected = new BigDecimal("0.3");
 
-        assertNotEquals(0.3, result);
+        assertNotEquals(0, actual.compareTo(expected));
     }
 
     @Test
     void bigDecimalFromStringsCalculatesExactly() {
         BigDecimal result = new BigDecimal("0.1")
                 .add(new BigDecimal("0.2"));
-
-        System.out.println("BigDecimal result: " + result);
 
         assertEquals(new BigDecimal("0.3"), result);
     }
@@ -32,9 +31,6 @@ class MoneyTest {
     void bigDecimalFromDoubleIsNotExact() {
         BigDecimal fromDouble = new BigDecimal(0.1);
         BigDecimal fromString = new BigDecimal("0.1");
-
-        System.out.println("From double: " + fromDouble);
-        System.out.println("From String: " + fromString);
 
         assertNotEquals(fromString, fromDouble);
     }
@@ -50,16 +46,30 @@ class MoneyTest {
 
     @Test
     void halfEvenRoundingWorksCorrectly() {
+        BigDecimal first = new BigDecimal("2.345");
+        BigDecimal second = new BigDecimal("2.355");
+
+        assertEquals(
+                new BigDecimal("2.34"),
+                first.setScale(2, RoundingMode.HALF_EVEN)
+        );
+
+        assertEquals(
+                new BigDecimal("2.36"),
+                second.setScale(2, RoundingMode.HALF_EVEN)
+        );
+    }
+
+    @Test
+    void halfUpRoundingWorksCorrectly() {
         BigDecimal amount = new BigDecimal("2.345");
 
         BigDecimal rounded = amount.setScale(
                 2,
-                RoundingMode.HALF_EVEN
+                RoundingMode.HALF_UP
         );
 
-        System.out.println("Rounded amount: " + rounded);
-
-        assertEquals(new BigDecimal("2.34"), rounded);
+        assertEquals(new BigDecimal("2.35"), rounded);
     }
 }
 
