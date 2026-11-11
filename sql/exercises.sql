@@ -48,8 +48,7 @@ SELECT
 FROM orders o
 JOIN customers c
     ON o.customer_id = c.id
-ORDER BY o.amount DESC
-LIMIT 1;
+WHERE o.amount = (SELECT MAX(amount) FROM orders);
 
 -- Exercise 5
 -- Average order amount per customer, rounded to 2 decimals
