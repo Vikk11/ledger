@@ -65,3 +65,15 @@ ON transfers(from_account_id);
 
 CREATE INDEX idx_transfers_to_account_id
 ON transfers(to_account_id);
+
+-- 6. Prevent TRUNCATE on financial history tables.
+
+CREATE TRIGGER ledger_entries_no_truncate
+BEFORE TRUNCATE ON ledger_entries
+FOR EACH STATEMENT
+EXECUTE FUNCTION forbid_change();
+
+CREATE TRIGGER transfers_no_truncate
+BEFORE TRUNCATE ON transfers
+FOR EACH STATEMENT
+EXECUTE FUNCTION forbid_change();
